@@ -36,6 +36,24 @@ BUILD SUCCESSFUL in 27s
 7 actionable tasks: 7 executed
 ```
 
+Projekt ausführen:
+
+```
+$ java -jar build/libs/springboot-0.0.1-SNAPSHOT.jar
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v2.5.6)
+
+2021-10-24 07:23:43.261  INFO 594947 --- [           main] c.e.springbo...
+2021-10-24 07:23:43.262  INFO 594947 --- [           main] c.e.springbo...
+2021-10-24 07:23:43.663  INFO 594947 --- [           main] c.e.springbo...
+```
+
 Links
 -----
 
