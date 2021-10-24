@@ -207,6 +207,19 @@ Die Log-Datei sieht nun so aus:
 
 Das Property wird korrekt aufgelöst und geloggt!
 
+Verschlüsselte Properties
+-------------------------
+
+- Ausgangspunkt: 03-properties
+- Arbeitsverzeichnis: 04-encryption
+- Ziel: Wir wollen ein verschlüsseltes SpringProperty aus application.properties verwenden
+
+Aktionen:
+
+- Projekt bereinigen: `( cd 03-properties; gradle clean; rm -rf .gradle app-logback.log; )`
+- Projekt kopieren: `cp -a 03-properties 04-encryption`
+- In's Projektverzeichnis wechseln: `cd 04-encryption`
+
 Links
 -----
 
