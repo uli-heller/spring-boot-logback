@@ -207,6 +207,72 @@ Die Log-Datei sieht nun so aus:
 
 Das Property wird korrekt aufgelöst und geloggt!
 
+Verschlüsselte Properties
+-------------------------
+
+- Ausgangspunkt: 03-properties
+- Arbeitsverzeichnis: 04-encryption
+- Ziel: Wir wollen ein verschlüsseltes SpringProperty aus application.properties verwenden
+
+Aktionen:
+
+- Projekt bereinigen: `( cd 03-properties; gradle clean; rm -rf .gradle app-logback.log; )`
+- Projekt kopieren: `cp -a 03-properties 04-encryption`
+- In's Projektverzeichnis wechseln: `cd 04-encryption`
+- Festlegen des Kennwortes für die Verschlüsselung: "uli-war-da" (ohne Anführungszeichen)
+- Verschlüsselung durchführen: `java -jar spring-boot-cli*.jar encrypt "ich bin verschluesselt" --key uli-war-da`
+- Verschlüsselten Wert zwischenspeichern: `fe435f6555c445cfb153c962d34a4c206d4d3c82200b595b89fdb372e099443d08fb23e78498f1184c74dfa0f8f40049`
+- Datei [build.gradle](04-encryption/build.gradle) erweitern: spring-cloud-config-starter muß eingebunden werden
+- Datei [application.properties](04-encryption/src/main/resources/application.properties) erweitern:
+    ```diff
+    diff --git a/04-encryption/src/main/resources/application.properties b/04-encryption/src/main/resources/application.properties
+    index d908c4c..3e893bd 100644
+    --- a/04-encryption/src/main/resources/application.properties
+    +++ b/04-encryption/src/main/resources/application.properties
+    @@ -1 +1,3 @@
+     uli=heller
+    +encrypted.property = {cipher}fe435f6555c445cfb153c962d34a4c206d4d3c82200b595b89fdb372e099443d08fb23e78498f1184c74dfa0f8f40049
+    +cleartext.property = ich bin nicht verschluesselt
+    +spring.config.import=optional:configserver:
+    ```
+- Hilfsklasse erweitern: [UliWarDa.java](04-encryption/src/main/java/com/example/springboot/UliWarDa.java):
+    - cleartext
+    - encrypted
+    - Konstruktor + Logging
+- Datei [SpringbootApplication.java](04-encryption/src/main/java/com/example/springboot/SpringbootApplication.java) erweitern:
+    - Instantiierung von UliWarDa erweitern
+- Kompilieren: `gradle clean build` -> scheitert!
+- Sichten von app-logback.log:
+    ```
+    ...
+    Caused by: java.lang.IllegalStateException: Cannot decrypt: key=encrypted.property
+    	at org.springframework.cloud.bootstrap.encrypt.AbstractEnvironmentDecrypt.decrypt(AbstractEnvironmentDecrypt.java:159)
+    	at org.springframework.cloud.bootstrap.encrypt.AbstractEnvironmentDecrypt.lambda$decrypt$0(AbstractEnvironmentDecrypt.java:137)
+    	at java.base/java.util.LinkedHashMap.replaceAll(LinkedHashMap.java:694)
+    	at org.springframework.cloud.bootstrap.encrypt.AbstractEnvironmentDecrypt.decrypt(AbstractEnvironmentDecrypt.java:132)
+    	at org.springframework.cloud.bootstrap.encrypt.AbstractEnvironmentDecrypt.decrypt(AbstractEnvironmentDecrypt.java:70)
+    ...
+    ```
+- Nochmal mit ENCRYPT_KEY: `ENCRYPT_KEY=uli-war-da gradle clean build` -> klappt!
+- Ausführen: `rm -f app-logback.log; java -jar build/libs/springboot-0.0.1-SNAPSHOT.jar`
+- Sichten: `tail app-logback.log`
+    ```
+    Caused by: java.lang.UnsupportedOperationException: No decryption for FailsafeTextEncryptor. Did you configure the keystore correctly?
+	at org.springframework.cloud.bootstrap.encrypt.TextEncryptorUtils$FailsafeTextEncryptor.decrypt(TextEncryptorUtils.java:188)
+	at org.springframework.cloud.bootstrap.encrypt.AbstractEnvironmentDecrypt.decrypt(AbstractEnvironmentDecrypt.java:144)
+	... 31 common frames omitted
+    ```
+- Nochmal ausführen mit ENCRYPT_KEY: `rm -f app-logback.log; ENCRYPT_KEY=uli-war-da java -jar build/libs/springboot-0.0.1-SNAPSHOT.jar`
+- Sichten: `tail app-logback.log`
+    ```
+    2021-10-24 11:40:13,140 INFO com.example.springboot.SpringbootApplication [main] Starting SpringbootApplication using Java 11.0.12 on ulicsl with PID...
+    2021-10-24 11:40:13,142 DEBUG com.example.springboot.SpringbootApplication [main] Running with Spring Boot v2.5.6, Spring v5.3.12
+    2021-10-24 11:40:13,142 INFO com.example.springboot.SpringbootApplication [main] No active profile set, falling back to default profiles: default
+    2021-10-24 11:40:13,611 INFO com.example.springboot.UliWarDa [main] Constructor('heller','ich bin nicht verschluesselt','ich bin verschluesselt')
+    2021-10-24 11:40:13,787 INFO com.example.springboot.SpringbootApplication [main] Started SpringbootApplication in 1.349 seconds (JVM running for 1.851)
+    2021-10-24 11:40:13,790 INFO com.example.springboot.SpringbootApplication [main] Uli war da
+    ```
+
 Links
 -----
 
