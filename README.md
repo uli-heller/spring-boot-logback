@@ -128,6 +128,51 @@ $ java -jar build/libs/springboot-0.0.1-SNAPSHOT.jar
 2021-10-24 08:46:22.298  INFO 661527 --- ... Uli war da
 ```
 
+Logback
+-------
+
+Ausgangspunkt: 01-springboot.
+
+Zwischenziel: Die Logzeilen sollen via Logback geschrieben werden.
+Laut [Baeldung - SpringBoot-Logging](https://www.baeldung.com/spring-boot-logging)
+müssen wir für die Verwendung von Logback quasi keine Änderungen vornehmen,
+weil wir SpringBoot-Starter verwenden und diese loggen per Standard via Logback.
+
+- Projekt bereinigen: `( cd 01-springboot; gradle clean; rm -rf .gradle; )`
+- Projekt kopieren: `cp -a 01-springboot 02-logback`
+- In's Projektverzeichnis wechseln: `cd 02-logback`
+- Datei "src/main/resources/logback.xml" anlegen - Details siehe [logback.xml](02-logback/src/main/resources/logback.xml)
+- Datei ".gitignore" erweitern: Logdatei ignorieren
+- Kompilieren: `gradle build`
+
+Ausführen sieht nun so aus:
+
+```
+$ java -jar build/libs/springboot-0.0.1-SNAPSHOT.jar
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v2.5.6)
+
+$ ls -l
+insgesamt 24
+-rw-rw-r-- 1 uli uli 1546 Okt 24 09:06 app-logback.log
+drwxrwxr-x 9 uli uli 4096 Okt 24 09:06 build
+...
+
+$ cat app-logback.log
+2021-10-24 09:06:46,947 INFO ... [main] Starting SpringbootApplication using Java 11.0.12 on ulicsl...
+2021-10-24 09:06:46,949 DEBUG ... [main] Running with Spring Boot v2.5.6, Spring v5.3.12
+2021-10-24 09:06:46,949 INFO ... [main] No active profile set, falling back to default profiles: default
+2021-10-24 09:06:47,319 INFO ... [main] Started SpringbootApplication in 0.618 seconds (JVM running for 1.108)
+2021-10-24 09:06:47,321 INFO ... [main] Uli war da
+```
+
+Die Lognachrichten landen in der Tat in der via Logback hinterlegten Logdatei!
 
 Links
 -----
@@ -135,6 +180,9 @@ Links
 - [SpringBoot](https://spring.io/projects/spring-boot)
 - [start.spring.io](start.spring.io)
 - [Logback](http://logback.qos.ch/)
+- [SpringBoot - Logging]https://docs.spring.io/spring-boot/docs/2.1.8.RELEASE/reference/html/howto-logging.html)
+- [Baeldung - SpringBoot-Logging](https://www.baeldung.com/spring-boot-logging)
+- [Mkyong - logback.xml Example](https://mkyong.com/logging/logback-xml-example/)
 
 Historie
 --------
