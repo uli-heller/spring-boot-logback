@@ -174,6 +174,39 @@ $ cat app-logback.log
 
 Die Lognachrichten landen in der Tat in der via Logback hinterlegten Logdatei!
 
+Properties
+----------
+
+- Ausgangspunkt: 02-logback
+- Arbeitsverzeichnis: 03-properties
+- Ziel: Wir wollen ein SpringProperty aus application.properties verwenden
+
+Aktionen:
+
+- Projekt bereinigen: `( cd 02-logback; gradle clean; rm -rf .gradle; )`
+- Projekt kopieren: `cp -a 02-logback 03-properties`
+- In's Projektverzeichnis wechseln: `cd 03-properties`
+- Hilfsklasse anlegen: [UliWarDa.java](03-properties/src/main/java/com/example/springboot/UliWarDa.java)
+- Datei [application.properties](03-properties/src/main/resources/application.properties) erweitern: `uli=heller`
+- Datei [SpringbootApplication.java](03-properties/src/main/java/com/example/springboot/SpringbootApplication.java) erweitern:
+    - Configuration und PropertySource
+    - Hilfsklasse instantiieren
+- Kompilieren: `gradle build`
+- Ausführen: `java -jar build/libs/springboot-0.0.1-SNAPSHOT.jar`
+
+Die Log-Datei sieht nun so aus:
+
+```
+2021-10-24 10:50:34,039 INFO com.example.springboot.SpringbootApplication [main] Starting Spr...
+2021-10-24 10:50:34,041 DEBUG com.example.springboot.SpringbootApplication [main] Running wit...
+2021-10-24 10:50:34,041 INFO com.example.springboot.SpringbootApplication [main] No active pr...
+2021-10-24 10:50:34,393 INFO com.example.springboot.UliWarDa [main] Constructor('heller')
+2021-10-24 10:50:34,447 INFO com.example.springboot.SpringbootApplication [main] Started Spri...
+2021-10-24 10:50:34,449 INFO com.example.springboot.SpringbootApplication [main] Uli war da
+```
+
+Das Property wird korrekt aufgelöst und geloggt!
+
 Links
 -----
 
