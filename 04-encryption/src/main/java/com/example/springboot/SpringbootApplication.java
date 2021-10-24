@@ -22,8 +22,10 @@ public class SpringbootApplication {
 	@PropertySource("classpath:application.properties")
 	static class MyConfiguration {
 		@Value("${uli}") String uli;
+		@Value("${cleartext.property}") String cleartext;
+		@Value("${encrypted.property}") String encrypted;
 		@Bean UliWarDa uliWarDa() {
-			return new UliWarDa(uli);
+			return new UliWarDa(uli, cleartext, encrypted);
 		}
 	}
 }
