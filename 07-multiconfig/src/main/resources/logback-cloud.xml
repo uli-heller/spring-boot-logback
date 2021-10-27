@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-    <property name="LOGFILE" value="app-logback.log"/>
+    <property name="LOGFILE" value="app-cloud-logback.log"/>
 
     <appender name="FILE-ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOGFILE}</file>
@@ -17,7 +17,7 @@
         </rollingPolicy>
 
         <encoder>
-            <pattern>%d %p %c{1.} [%t] %m%n</pattern>
+            <pattern>CLOUD - %d %p %c{1.} [%t] %m%n</pattern>
         </encoder>
     </appender>
 
