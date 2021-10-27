@@ -273,13 +273,59 @@ Aktionen:
     2021-10-24 11:40:13,790 INFO com.example.springboot.SpringbootApplication [main] Uli war da
     ```
 
+Spring Profile
+--------------
+
+### Irrweg
+
+- Ausgangspunkt: 04-encryption
+- Arbeitsverzeichnis: 05-springprofile
+- Ziel: Wir wollen die Logback-Konfiguration differenzieren nach den aktiven Spring Profiles.
+  Wir machen es erstmal falsch, so dass die Logback-Konfiguration bei der Intitalisierung von
+  Spring teilweise nicht verwendet wird!
+
+Aktionen:
+
+- Projekt bereinigen: `( cd 04-encryption; gradle clean; rm -rf .gradle app-logback.log; )`
+- Projekt kopieren: `cp -a 04-encryption 05-springprofile`
+- In's Projektverzeichnis wechseln: `cd 05-springprofile`
+- Datei [logback.xml](05-springprofile/src/main/resources/logback.xml) anpassen: springProfile aufnehmen
+    ```diff
+    @@ -25,8 +25,22 @@
+             <appender-ref ref="FILE-ROLLING"/>
+         </logger>
+     
+    +    <springProfile name="!local">
+           <root level="error">
+             <appender-ref ref="FILE-ROLLING"/>
+           </root>
+    +    </springProfile>
+    +    <springProfile name="local">
+    +      <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    +        <!-- encoders are assigned the type
+    +           ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+    +        <encoder>
+    +          <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+    +        </encoder>
+    +      </appender>
+    +      <root level="info">
+    +        <appender-ref ref="STDOUT" />
+    +      </root>
+    +    </springProfile>
+     
+     </configuration>
+    ```
+- Kompilieren: `ENCRYPT_KEY=uli-war-da gradle clean build`
+- Ausführen: `rm -f app-logback.log; java -jar build/libs/springboot-0.0.1-SNAPSHOT.jar`
+- Wie erwartet erscheinen Teile der Logs auf der Konsole! (Klar! springProfile darf ja nicht in logback.xml verwendet werden!)
+
 Links
 -----
 
 - [SpringBoot](https://spring.io/projects/spring-boot)
 - [start.spring.io](start.spring.io)
 - [Logback](http://logback.qos.ch/)
-- [SpringBoot - Logging]https://docs.spring.io/spring-boot/docs/2.1.8.RELEASE/reference/html/howto-logging.html)
+- [SpringBoot - Logging](https://docs.spring.io/spring-boot/docs/2.5.6/reference/htmlsingle/#features.logging.custom-log-configuration)
 - [Baeldung - SpringBoot-Logging](https://www.baeldung.com/spring-boot-logging)
 - [Mkyong - logback.xml Example](https://mkyong.com/logging/logback-xml-example/)
 
