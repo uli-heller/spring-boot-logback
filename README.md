@@ -351,12 +351,63 @@ Caused by: java.lang.UnsupportedOperationException: No decryption for FailsafeTe
 	... 31 common frames omitted
 ```
 
+### Mehrere Konfigurationsdateien
+
+- Ausgangspunkt: 04-encryption
+- Arbeitsverzeichnis: 07-multiconfig
+- Ziel: Wir wollen die Logback-Konfiguration differenzieren nach den aktiven Spring Profiles.
+  Wir verwenden dazu "-Dlogging.config".
+
+Aktionen:
+
+- Projekt bereinigen: `( cd 04-encryption; gradle clean; rm -rf .gradle app-logback.log; )`
+- Projekt kopieren: `cp -a 04-encryption 07-multiconfig`
+- In's Projektverzeichnis wechseln: `cd 07-multiconfig`
+- Datei logback.xml kopieren nach [logback-local.xml](07-springprofile/src/main/resources/logback-cloud.xml) und anpassen:
+    ```diff
+    @@ -1,9 +1,9 @@
+     <?xml version="1.0" encoding="UTF-8"?>
+     <configuration>
+     
+    -    <property name="LOGFILE" value="app-logback.log"/>
+    +    <property name="LOGFILE" value="app-cloud-logback.log"/>
+     
+         <appender name="FILE-ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
+             <file>${LOGFILE}</file>
+     
+             <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+    @@ -15,11 +15,11 @@
+                 <!-- 60 days to keep -->
+                 <maxHistory>60</maxHistory>
+             </rollingPolicy>
+     
+             <encoder>
+    -            <pattern>%d %p %c{1.} [%t] %m%n</pattern>
+    +            <pattern>CLOUD - %d %p %c{1.} [%t] %m%n</pattern>
+             </encoder>
+         </appender>
+     
+         <logger name="com.example" level="debug" additivity="false">
+             <appender-ref ref="FILE-ROLLING"/>
+             </appender>
+    ```
+- Kompilieren: `ENCRYPT_KEY=uli-war-da gradle clean build`
+- Ausführen: `rm -f app*logback.log; java -Dlogback.configurationFile=logback-cloud.xml -jar build/libs/springboot-0.0.1-SNAPSHOT.jar`
+- Alle Logs erscheinen in app-cloud-logback.log
+- Ausführen: `rm -f app*logback.log; java -jar build/libs/springboot-0.0.1-SNAPSHOT.jar`
+- Alle Logs erscheinen in app-logback.log
+
+Ich habe auch zahlreiche Experimente mit "-Dlogging.config" durchgeführt. Die sind allesamt gescheitert.
+Offenbar wird das Property erst relativ spät während der Initialisierung von Spring ausgewertet, so dass
+frühe Initialisierungsprobleme dann mit der falschen Log-Konfiguration protokolliert werden!
+
 Links
 -----
 
 - [SpringBoot](https://spring.io/projects/spring-boot)
 - [start.spring.io](start.spring.io)
 - [Logback](http://logback.qos.ch/)
+- [Logback - Konfiguration](http://logback.qos.ch/manual/configuration.html)
 - [SpringBoot - Logging](https://docs.spring.io/spring-boot/docs/2.5.6/reference/htmlsingle/#features.logging.custom-log-configuration)
 - [Baeldung - SpringBoot-Logging](https://www.baeldung.com/spring-boot-logging)
 - [Mkyong - logback.xml Example](https://mkyong.com/logging/logback-xml-example/)
