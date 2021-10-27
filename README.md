@@ -363,7 +363,21 @@ Aktionen:
 - Projekt bereinigen: `( cd 04-encryption; gradle clean; rm -rf .gradle app-logback.log; )`
 - Projekt kopieren: `cp -a 04-encryption 07-multiconfig`
 - In's Projektverzeichnis wechseln: `cd 07-multiconfig`
-- Datei logback.xml kopieren nach [logback-local.xml](07-springprofile/src/main/resources/logback-cloud.xml)
+- Datei logback.xml kopieren nach [logback-local.xml](07-springprofile/src/main/resources/logback-cloud.xml) und anpassen:
+    ```diff
+    diff --git a/07-multiconfig/src/main/resources/logback-cloud.xml b/07-multiconfig/src/main/resources/logback-cloud.xml
+    index 78665d5..e6799db 100644
+    --- a/07-multiconfig/src/main/resources/logback-cloud.xml
+    +++ b/07-multiconfig/src/main/resources/logback-cloud.xml
+    @@ -17,7 +17,7 @@
+             </rollingPolicy>
+     
+             <encoder>
+    -            <pattern>%d %p %c{1.} [%t] %m%n</pattern>
+    +            <pattern>CLOUD - %d %p %c{1.} [%t] %m%n</pattern>
+             </encoder>
+         </appender>
+    ```
 - Kompilieren: `ENCRYPT_KEY=uli-war-da gradle clean build`
 - Ausführen: `rm -f app-logback.log; java -jar build/libs/springboot-0.0.1-SNAPSHOT.jar`
 - Es erscheinen immer noch Teile der Logs auf der Konsole!
