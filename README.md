@@ -397,12 +397,17 @@ Aktionen:
 - Ausführen: `rm -f app*logback.log; java -jar build/libs/springboot-0.0.1-SNAPSHOT.jar`
 - Alle Logs erscheinen in app-logback.log
 
+Ich habe auch zahlreiche Experimente mit "-Dlogging.config" durchgeführt. Die sind allesamt gescheitert.
+Offenbar wird das Property erst relativ spät während der Initialisierung von Spring ausgewertet, so dass
+frühe Initialisierungsprobleme dann mit der falschen Log-Konfiguration protokolliert werden!
+
 Links
 -----
 
 - [SpringBoot](https://spring.io/projects/spring-boot)
 - [start.spring.io](start.spring.io)
 - [Logback](http://logback.qos.ch/)
+- [Logback - Konfiguration](http://logback.qos.ch/manual/configuration.html)
 - [SpringBoot - Logging](https://docs.spring.io/spring-boot/docs/2.5.6/reference/htmlsingle/#features.logging.custom-log-configuration)
 - [Baeldung - SpringBoot-Logging](https://www.baeldung.com/spring-boot-logging)
 - [Mkyong - logback.xml Example](https://mkyong.com/logging/logback-xml-example/)
