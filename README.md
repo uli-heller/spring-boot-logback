@@ -324,7 +324,7 @@ Aktionen:
 - Ausgangspunkt: 05-springprofile
 - Arbeitsverzeichnis: 06-springprofile
 - Ziel: Wir wollen die Logback-Konfiguration differenzieren nach den aktiven Spring Profiles.
-  diesmal machen wir es richtig!
+  Diesmal machen wir es richtig!
 
 Aktionen:
 
@@ -334,7 +334,22 @@ Aktionen:
 - Datei logback.xml umbenennen in [logback-spring.xml](06-springprofile/src/main/resources/logback-spring.xml)
 - Kompilieren: `ENCRYPT_KEY=uli-war-da gradle clean build`
 - Ausführen: `rm -f app-logback.log; java -jar build/libs/springboot-0.0.1-SNAPSHOT.jar`
-- Wie erwartet erscheinen Teile der Logs auf der Konsole! (Klar! springProfile darf ja nicht in logback.xml verwendet werden!)
+- Es erscheinen immer noch Teile der Logs auf der Konsole!
+
+```
+$ rm -f app-logback.log; java -jar build/libs/springboot-0.0.1-SNAPSHOT.jar
+05:54:59.472 [main] ERROR org.springframework.boot.SpringApplication - Application run failed
+java.lang.IllegalStateException: Cannot decrypt: key=encrypted.property
+	at org.springframework.cloud.bootstrap.encrypt.AbstractEnvironmentDecrypt.decrypt(AbstractEnvironmentDecrypt.java:159)
+	at org.springframework.cloud.bootstrap.encrypt.AbstractEnvironmentDecrypt.lambda$decrypt$0(AbstractEnvironmentDecrypt.java:137)
+	at java.base/java.util.LinkedHashMap.replaceAll(LinkedHashMap.java:694)
+	at org.springframework.cloud.bootstrap.encrypt.AbstractEnvironmentDecrypt.decrypt(AbstractEnvironmentDecrypt.java:132)
+...
+Caused by: java.lang.UnsupportedOperationException: No decryption for FailsafeTextEncryptor. Did you configure the keystore correctly?
+	at org.springframework.cloud.bootstrap.encrypt.TextEncryptorUtils$FailsafeTextEncryptor.decrypt(TextEncryptorUtils.java:188)
+	at org.springframework.cloud.bootstrap.encrypt.AbstractEnvironmentDecrypt.decrypt(AbstractEnvironmentDecrypt.java:144)
+	... 31 common frames omitted
+```
 
 Links
 -----
