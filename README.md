@@ -276,9 +276,13 @@ Aktionen:
 Spring Profile
 --------------
 
+### Irrweg
+
 - Ausgangspunkt: 04-encryption
 - Arbeitsverzeichnis: 05-springprofile
-- Ziel: Wir wollen die Logback-Konfiguration differenzieren nach den aktiven Spring Profiles
+- Ziel: Wir wollen die Logback-Konfiguration differenzieren nach den aktiven Spring Profiles.
+  Wir machen es erstmal falsch, so dass die Logback-Konfiguration bei der Intitalisierung von
+  Spring teilweise nicht verwendet wird!
 
 Aktionen:
 
@@ -311,6 +315,9 @@ Aktionen:
      
      </configuration>
     ```
+- Kompilieren: `ENCRYPT_KEY=uli-war-da gradle clean build`
+- Ausführen: `rm -f app-logback.log; java -jar build/libs/springboot-0.0.1-SNAPSHOT.jar`
+- Wie erwartet erscheinen Teile der Logs auf der Konsole! (Klar! springProfile darf ja nicht in logback.xml verwendet werden!)
 
 Links
 -----
