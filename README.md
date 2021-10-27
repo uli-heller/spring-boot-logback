@@ -351,6 +351,23 @@ Caused by: java.lang.UnsupportedOperationException: No decryption for FailsafeTe
 	... 31 common frames omitted
 ```
 
+### Mehrere Konfigurationsdateien
+
+- Ausgangspunkt: 04-encryption
+- Arbeitsverzeichnis: 07-multiconfig
+- Ziel: Wir wollen die Logback-Konfiguration differenzieren nach den aktiven Spring Profiles.
+  Wir verwenden dazu "-Dlogging.config".
+
+Aktionen:
+
+- Projekt bereinigen: `( cd 04-encryption; gradle clean; rm -rf .gradle app-logback.log; )`
+- Projekt kopieren: `cp -a 04-encryption 07-multiconfig`
+- In's Projektverzeichnis wechseln: `cd 07-multiconfig`
+- Datei logback.xml kopieren nach [logback-local.xml](07-springprofile/src/main/resources/logback-cloud.xml)
+- Kompilieren: `ENCRYPT_KEY=uli-war-da gradle clean build`
+- Ausführen: `rm -f app-logback.log; java -jar build/libs/springboot-0.0.1-SNAPSHOT.jar`
+- Es erscheinen immer noch Teile der Logs auf der Konsole!
+
 Links
 -----
 
