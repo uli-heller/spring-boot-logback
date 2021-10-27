@@ -6,6 +6,22 @@ das Zusammenspiel von SpringBoot und LogBack untersucht.
 Keine Ahnung, warum wir Logback verwenden und nicht das
 neuere Log4j2!
 
+TLDR
+----
+
+- Das Zusammenspiel ist relativ problemlos
+- Wenn **alle** Fehlermeldungen von SpringBoot im Log erscheinen sollen,
+  wird es ein wenig kompliziert
+- Problematisch scheint insbesondere das automatische Entschlüsseln
+  mittels ENCRYPT_KEY zu sein
+- Es dürfen dann **keine** "Spring-Erweiterungen" bei der Konfiguration
+  von Logback verwendet werden
+  - logging.config ... funktioniert nicht
+  - logback-spring.xml und `<springProfile>` ... funktioniert nicht
+- Also dies verwenden:
+  - logback.configurationFile
+  - logback.xml
+
 SpringBoot
 ----------
 
