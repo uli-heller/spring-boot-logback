@@ -319,6 +319,48 @@ Aktionen:
 - Ausführen: `rm -f app-logback.log; java -jar build/libs/springboot-0.0.1-SNAPSHOT.jar`
 - Wie erwartet erscheinen Teile der Logs auf der Konsole! (Klar! springProfile darf ja nicht in logback.xml verwendet werden!)
 
+### Korrektur
+
+- Ausgangspunkt: 05-springprofile
+- Arbeitsverzeichnis: 06-springprofile
+- Ziel: Wir wollen die Logback-Konfiguration differenzieren nach den aktiven Spring Profiles.
+  diesmal machen wir es richtig!
+
+Aktionen:
+
+- Projekt bereinigen: `( cd 05-springprofile; gradle clean; rm -rf .gradle app-logback.log; )`
+- Projekt kopieren: `cp -a 05-springprofile 06-springprofile`
+- In's Projektverzeichnis wechseln: `cd 06-springprofile`
+- Datei [logback.xml](05-springprofile/src/main/resources/logback.xml) anpassen: springProfile aufnehmen
+    ```diff
+    @@ -25,8 +25,22 @@
+             <appender-ref ref="FILE-ROLLING"/>
+         </logger>
+     
+    +    <springProfile name="!local">
+           <root level="error">
+             <appender-ref ref="FILE-ROLLING"/>
+           </root>
+    +    </springProfile>
+    +    <springProfile name="local">
+    +      <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    +        <!-- encoders are assigned the type
+    +           ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+    +        <encoder>
+    +          <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+    +        </encoder>
+    +      </appender>
+    +      <root level="info">
+    +        <appender-ref ref="STDOUT" />
+    +      </root>
+    +    </springProfile>
+     
+     </configuration>
+    ```
+- Kompilieren: `ENCRYPT_KEY=uli-war-da gradle clean build`
+- Ausführen: `rm -f app-logback.log; java -jar build/libs/springboot-0.0.1-SNAPSHOT.jar`
+- Wie erwartet erscheinen Teile der Logs auf der Konsole! (Klar! springProfile darf ja nicht in logback.xml verwendet werden!)
+
 Links
 -----
 
@@ -332,4 +374,5 @@ Links
 Historie
 --------
 
+- 2021-10-27: Experimente mit SpringProfiles
 - 2021-10-24: Erste Version
