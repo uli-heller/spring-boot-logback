@@ -285,6 +285,32 @@ Aktionen:
 - Projekt bereinigen: `( cd 04-encryption; gradle clean; rm -rf .gradle app-logback.log; )`
 - Projekt kopieren: `cp -a 04-encryption 05-springprofile`
 - In's Projektverzeichnis wechseln: `cd 05-springprofile`
+- Datei [logback.xml](05-springprofile/src/main/resources/logback.xml) anpassen: springProfile aufnehmen
+    ```diff
+    @@ -25,8 +25,22 @@
+             <appender-ref ref="FILE-ROLLING"/>
+         </logger>
+     
+    +    <springProfile name="!local">
+           <root level="error">
+             <appender-ref ref="FILE-ROLLING"/>
+           </root>
+    +    </springProfile>
+    +    <springProfile name="local">
+    +      <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    +        <!-- encoders are assigned the type
+    +           ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+    +        <encoder>
+    +          <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+    +        </encoder>
+    +      </appender>
+    +      <root level="info">
+    +        <appender-ref ref="STDOUT" />
+    +      </root>
+    +    </springProfile>
+     
+     </configuration>
+    ```
 
 Links
 -----
