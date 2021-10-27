@@ -392,8 +392,10 @@ Aktionen:
              </appender>
     ```
 - Kompilieren: `ENCRYPT_KEY=uli-war-da gradle clean build`
-- Ausführen: `rm -f app-logback.log; java -jar build/libs/springboot-0.0.1-SNAPSHOT.jar`
-- Es erscheinen immer noch Teile der Logs auf der Konsole!
+- Ausführen: `rm -f app*logback.log; java -Dlogback.configurationFile=logback-cloud.xml -jar build/libs/springboot-0.0.1-SNAPSHOT.jar`
+- Alle Logs erscheinen in app-cloud-logback.log
+- Ausführen: `rm -f app*logback.log; java -jar build/libs/springboot-0.0.1-SNAPSHOT.jar`
+- Alle Logs erscheinen in app-logback.log
 
 Links
 -----
