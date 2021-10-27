@@ -273,13 +273,26 @@ Aktionen:
     2021-10-24 11:40:13,790 INFO com.example.springboot.SpringbootApplication [main] Uli war da
     ```
 
+Spring Profile
+--------------
+
+- Ausgangspunkt: 04-encryption
+- Arbeitsverzeichnis: 05-springprofile
+- Ziel: Wir wollen die Logback-Konfiguration differenzieren nach den aktiven Spring Profiles
+
+Aktionen:
+
+- Projekt bereinigen: `( cd 04-encryption; gradle clean; rm -rf .gradle app-logback.log; )`
+- Projekt kopieren: `cp -a 04-encryption 05-springprofile`
+- In's Projektverzeichnis wechseln: `cd 05-springprofile`
+
 Links
 -----
 
 - [SpringBoot](https://spring.io/projects/spring-boot)
 - [start.spring.io](start.spring.io)
 - [Logback](http://logback.qos.ch/)
-- [SpringBoot - Logging]https://docs.spring.io/spring-boot/docs/2.1.8.RELEASE/reference/html/howto-logging.html)
+- [SpringBoot - Logging](https://docs.spring.io/spring-boot/docs/2.5.6/reference/htmlsingle/#features.logging.custom-log-configuration)
 - [Baeldung - SpringBoot-Logging](https://www.baeldung.com/spring-boot-logging)
 - [Mkyong - logback.xml Example](https://mkyong.com/logging/logback-xml-example/)
 
