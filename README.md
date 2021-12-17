@@ -1,10 +1,13 @@
-Zusammenspiel von SpringBoot und Logback
-========================================
+Zusammenspiel von SpringBoot und Logback und Log4j2
+===================================================
 
 Dies ist ein kleines Beispielprojekt, welches
 das Zusammenspiel von SpringBoot und LogBack untersucht.
 Keine Ahnung, warum wir Logback verwenden und nicht das
 neuere Log4j2!
+
+Im Rahmen von [CVE-2021-44228 vulnerability in Apache Log4j library](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-44228)
+erweitere ich die Untersuchung noch ein klein wenig in Hinblick auf die Einbindung von "log4j2".
 
 TLDR
 ----
@@ -417,6 +420,157 @@ Ich habe auch zahlreiche Experimente mit "-Dlogging.config" durchgeführt. Die s
 Offenbar wird das Property erst relativ spät während der Initialisierung von Spring ausgewertet, so dass
 frühe Initialisierungsprobleme dann mit der falschen Log-Konfiguration protokolliert werden!
 
+Log4j
+-----
+
+Ausgangspunkt: 01-springboot.
+
+Zwischenziel: Wir untersuchen, welche log4j-Klassen
+angezogen werden.
+
+- Abhängigkeitsbaum anzeigen: `( cd 01-springboot; gradle dependencies; )`
+- Projekt bereinigen: `( cd 01-springboot; gradle clean; rm -rf .gradle; )`
+- Projekt kopieren: `cp -a 01-springboot 08-springboot-261`
+- In's Projektverzeichnis wechseln: `cd 08-springboot-261`
+- Datei "build.gradle" anpassen:
+    ```diff
+    ----------------------- 08-springboot-2.6.1/build.gradle -----------------------
+    index 745159c..31776fa 100644
+    @@ -1,7 +1,7 @@
+     plugins {
+    -	id 'org.springframework.boot' version '2.5.6'
+    +	id 'org.springframework.boot' version '2.6.1'
+     	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+     	id 'java'
+     }
+     
+     group = 'com.example'
+    ```
+- Abhängigkeitsbaum anzeigen: `gradle dependencies`
+- Noch eine Anpassung an "build.gradle":
+    ```diff
+    index 31776fa..c0a8581 100644
+    --- a/08-springboot-2.6.1/build.gradle
+    +++ b/08-springboot-2.6.1/build.gradle
+    @@ -8,6 +8,8 @@ group = 'com.example'
+     version = '0.0.1-SNAPSHOT'
+     sourceCompatibility = '11'
+     
+    +ext['log4j2.version'] = '2.16.0'
+    +
+     repositories {
+            mavenCentral()
+     }
+    ```
+- Abhängigkeitsbaum anzeigen: `gradle dependencies`
+
+Die Abhängigkeitsbäume stehen unten.
+
+### Abhängigkeiten für 2.5.6
+
+```
+...
+productionRuntimeClasspath
+\--- org.springframework.boot:spring-boot-starter -> 2.5.6
+     +--- org.springframework.boot:spring-boot:2.5.6
+     |    +--- org.springframework:spring-core:5.3.12
+     |    |    \--- org.springframework:spring-jcl:5.3.12
+     |    \--- org.springframework:spring-context:5.3.12
+     |         +--- org.springframework:spring-aop:5.3.12
+     |         |    +--- org.springframework:spring-beans:5.3.12
+     |         |    |    \--- org.springframework:spring-core:5.3.12 (*)
+     |         |    \--- org.springframework:spring-core:5.3.12 (*)
+     |         +--- org.springframework:spring-beans:5.3.12 (*)
+     |         +--- org.springframework:spring-core:5.3.12 (*)
+     |         \--- org.springframework:spring-expression:5.3.12
+     |              \--- org.springframework:spring-core:5.3.12 (*)
+     +--- org.springframework.boot:spring-boot-autoconfigure:2.5.6
+     |    \--- org.springframework.boot:spring-boot:2.5.6 (*)
+     +--- org.springframework.boot:spring-boot-starter-logging:2.5.6
+     |    +--- ch.qos.logback:logback-classic:1.2.6
+     |    |    +--- ch.qos.logback:logback-core:1.2.6
+     |    |    \--- org.slf4j:slf4j-api:1.7.32
+     |    +--- org.apache.logging.log4j:log4j-to-slf4j:2.14.1
+     |    |    +--- org.slf4j:slf4j-api:1.7.25 -> 1.7.32
+     |    |    \--- org.apache.logging.log4j:log4j-api:2.14.1
+     |    \--- org.slf4j:jul-to-slf4j:1.7.32
+     |         \--- org.slf4j:slf4j-api:1.7.32
+     +--- jakarta.annotation:jakarta.annotation-api:1.3.5
+     +--- org.springframework:spring-core:5.3.12 (*)
+     \--- org.yaml:snakeyaml:1.28
+...
+```
+
+### Abhängigkeiten für 2.6.1
+
+```
+...
+productionRuntimeClasspath
+\--- org.springframework.boot:spring-boot-starter -> 2.6.1
+     +--- org.springframework.boot:spring-boot:2.6.1
+     |    +--- org.springframework:spring-core:5.3.13
+     |    |    \--- org.springframework:spring-jcl:5.3.13
+     |    \--- org.springframework:spring-context:5.3.13
+     |         +--- org.springframework:spring-aop:5.3.13
+     |         |    +--- org.springframework:spring-beans:5.3.13
+     |         |    |    \--- org.springframework:spring-core:5.3.13 (*)
+     |         |    \--- org.springframework:spring-core:5.3.13 (*)
+     |         +--- org.springframework:spring-beans:5.3.13 (*)
+     |         +--- org.springframework:spring-core:5.3.13 (*)
+     |         \--- org.springframework:spring-expression:5.3.13
+     |              \--- org.springframework:spring-core:5.3.13 (*)
+     +--- org.springframework.boot:spring-boot-autoconfigure:2.6.1
+     |    \--- org.springframework.boot:spring-boot:2.6.1 (*)
+     +--- org.springframework.boot:spring-boot-starter-logging:2.6.1
+     |    +--- ch.qos.logback:logback-classic:1.2.7
+     |    |    +--- ch.qos.logback:logback-core:1.2.7
+     |    |    \--- org.slf4j:slf4j-api:1.7.32
+     |    +--- org.apache.logging.log4j:log4j-to-slf4j:2.14.1
+     |    |    +--- org.slf4j:slf4j-api:1.7.25 -> 1.7.32
+     |    |    \--- org.apache.logging.log4j:log4j-api:2.14.1
+     |    \--- org.slf4j:jul-to-slf4j:1.7.32
+     |         \--- org.slf4j:slf4j-api:1.7.32
+     +--- jakarta.annotation:jakarta.annotation-api:1.3.5
+     +--- org.springframework:spring-core:5.3.13 (*)
+     \--- org.yaml:snakeyaml:1.29
+...
+```
+
+### Abhängigkeiten für 2.6.1 und log4j2.version
+
+```
+...
+productionRuntimeClasspath
+\--- org.springframework.boot:spring-boot-starter -> 2.6.1
+     +--- org.springframework.boot:spring-boot:2.6.1
+     |    +--- org.springframework:spring-core:5.3.13
+     |    |    \--- org.springframework:spring-jcl:5.3.13
+     |    \--- org.springframework:spring-context:5.3.13
+     |         +--- org.springframework:spring-aop:5.3.13
+     |         |    +--- org.springframework:spring-beans:5.3.13
+     |         |    |    \--- org.springframework:spring-core:5.3.13 (*)
+     |         |    \--- org.springframework:spring-core:5.3.13 (*)
+     |         +--- org.springframework:spring-beans:5.3.13 (*)
+     |         +--- org.springframework:spring-core:5.3.13 (*)
+     |         \--- org.springframework:spring-expression:5.3.13
+     |              \--- org.springframework:spring-core:5.3.13 (*)
+     +--- org.springframework.boot:spring-boot-autoconfigure:2.6.1
+     |    \--- org.springframework.boot:spring-boot:2.6.1 (*)
+     +--- org.springframework.boot:spring-boot-starter-logging:2.6.1
+     |    +--- ch.qos.logback:logback-classic:1.2.7
+     |    |    +--- ch.qos.logback:logback-core:1.2.7
+     |    |    \--- org.slf4j:slf4j-api:1.7.32
+     |    +--- org.apache.logging.log4j:log4j-to-slf4j:2.14.1 -> 2.16.0
+     |    |    +--- org.slf4j:slf4j-api:1.7.25 -> 1.7.32
+     |    |    \--- org.apache.logging.log4j:log4j-api:2.16.0
+     |    \--- org.slf4j:jul-to-slf4j:1.7.32
+     |         \--- org.slf4j:slf4j-api:1.7.32
+     +--- jakarta.annotation:jakarta.annotation-api:1.3.5
+     +--- org.springframework:spring-core:5.3.13 (*)
+     \--- org.yaml:snakeyaml:1.29
+...
+```
+
 Links
 -----
 
@@ -427,9 +581,12 @@ Links
 - [SpringBoot - Logging](https://docs.spring.io/spring-boot/docs/2.5.6/reference/htmlsingle/#features.logging.custom-log-configuration)
 - [Baeldung - SpringBoot-Logging](https://www.baeldung.com/spring-boot-logging)
 - [Mkyong - logback.xml Example](https://mkyong.com/logging/logback-xml-example/)
+- [CVE-2021-44228](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-44228)
+- [Log4J2 Vulnerability and Spring Boot](https://spring.io/blog/2021/12/10/log4j2-vulnerability-and-spring-boot)
 
 Historie
 --------
 
+- 2021-12-17: Weitere Untersuchungen in Zusammenhang mit CVE-2021-44228
 - 2021-10-27: Experimente mit SpringProfiles
 - 2021-10-24: Erste Version
